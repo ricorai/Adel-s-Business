@@ -4,6 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adel's — Homemade Goodness</title>
+<meta name="description" content="Adel's homemade food — Ice Cream, Peanut Butter Spread, Strawberry Spread & Egg Chips. Made fresh daily in Tagum, Davao del Norte. Order via WhatsApp or Facebook.">
+<meta property="og:title" content="Adel's — Homemade Goodness">
+<meta property="og:description" content="Homemade Ice Cream, Peanut Butter Spread, Strawberry Spread & Egg Chips from our kitchen to your smile.">
+<meta property="og:image" content="assets/logo.jpg">
+<meta property="og:url" content="https://ricorai.github.io/Adel-s-Business/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"LocalBusiness",
+  "name":"Adel's",
+  "description":"Homemade food — Ice Cream, Peanut Butter Spread, Strawberry Spread & Egg Chips.",
+  "telephone":"+639695989955",
+  "address":{"@type":"PostalAddress","streetAddress":"Manuel B. Suaybaguio Sr. St","addressLocality":"Tagum","addressRegion":"Davao del Norte","addressCountry":"PH"},
+  "openingHours":"Mo-Sa 09:00-18:00",
+  "sameAs":["https://www.facebook.com/adelshomemadegoodies/"]
+}
+</script>
 <style>
   /* ── loader ── */
   .loader-overlay{
@@ -123,10 +142,12 @@
     box-shadow:0 0 0 2px #c8b8a0, 0 0.5em 0 0 #ede0d2;
     transform:translate3d(0,0.5em,-1em);
   }
-  .header-push:active{
+  .header-push:active,
+  .header-push.pressing{
     transform:translate(0,0.75em);
   }
-  .header-push:active::before{
+  .header-push:active::before,
+  .header-push.pressing::before{
     box-shadow:0 0 0 2px #c8b8a0, 0 0 #ede0d2;
     transform:translate3d(0,0,-1em);
   }
@@ -218,10 +239,13 @@
       transform:rotateY(180deg);
     }
   }
-  @media(hover:none){
-    .flip-card:active .flip-card-inner{
-      transform:rotateY(180deg);
-    }
+  .flip-card.tapped .flip-card-inner{
+    transform:rotateY(180deg);
+  }
+  .flip-card:focus-visible{
+    outline:3px solid var(--strawberry);
+    outline-offset:3px;
+    border-radius:var(--radius);
   }
   .flip-card-front,.flip-card-back{
     position:absolute;inset:0;
@@ -370,6 +394,11 @@
       inset 0 0 6px 3px #a89880,
       inset 0 0 24px #bfac98;
   }
+  .footer-btn:focus-visible{
+    outline:3px solid var(--strawberry);
+    outline-offset:3px;
+    border-radius:30px;
+  }
   .btn-facebook{
     --btn-color:#a0b8d4;
     --btn-color-light:#dce6f0;
@@ -462,23 +491,24 @@
 
   <!-- ═══ FOOTER ═══ -->
   <footer class="footer">
-    <a class="footer-btn btn-facebook" href="https://www.facebook.com/adelshomemadegoodies/" target="_blank" rel="noopener">
+    <a class="footer-btn btn-facebook" href="https://www.facebook.com/adelshomemadegoodies/" target="_blank" rel="noopener" aria-label="Visit our Facebook page">
       <img class="btn-icon" src="assets/facebook icon.png" alt=""> Facebook
     </a>
-    <a class="footer-btn btn-contact" href="https://wa.me/639695989955" target="_blank" rel="noopener">
+    <a class="footer-btn btn-contact" href="https://wa.me/639695989955" target="_blank" rel="noopener" aria-label="Call us on WhatsApp">
       <img class="btn-icon" src="assets/call us icon.png" alt=""> Call Us
     </a>
-    <a class="footer-btn btn-maps" href="https://maps.google.com/?q=FR56%2B3JV+Manuel+B+Suaybaguio+Sr+St+Tagum+Davao+del+Norte" target="_blank" rel="noopener">
+    <a class="footer-btn btn-maps" href="https://maps.google.com/?q=FR56%2B3JV+Manuel+B+Suaybaguio+Sr+St+Tagum+Davao+del+Norte" target="_blank" rel="noopener" aria-label="Find us on Google Maps">
       <img class="btn-icon" src="assets/location icon.png" alt=""> Find Us
     </a>
-    <a class="footer-btn btn-message" href="https://m.me/adelshomemadegoodies" target="_blank" rel="noopener">
+    <a class="footer-btn btn-message" href="https://m.me/adelshomemadegoodies" target="_blank" rel="noopener" aria-label="Message us on Messenger">
       <img class="btn-icon" src="assets/message icon.png" alt=""> Message
     </a>
   </footer>
 
 <script>
 /* ── PRODUCT DATA — add a product: push { name, price, desc?, photo, position?, fit? } ── */
-/* position: shift crop (e.g. "center 20%"). fit: "contain" = full image + margins, default "cover" = edge-to-edge */
+/* ── PRODUCT DATA — generic array: add as many as you want ── */
+/* fields: name, price, desc?, photo?, fit?, position?, placeholder? */
 const products = [
   {
     name: "Ice Cream",
@@ -507,56 +537,95 @@ const products = [
     desc: "Crispy, golden, and just the right amount of salty.",
     photo: "assets/egg chips.png",
     fit: "contain"
+  },
+  {
+    name: "Coming Soon",
+    price: "···",
+    desc: "Something new is cooking…",
+    photo: "assets/coming soon icon.png",
+    placeholder: true
   }
 ];
 
-/* ── BUILD FLIP CARDS ── */
+/* ── TOUCH DETECTION ── */
+const isTouchDevice = window.matchMedia("(hover: none)").matches;
+
+/* ── BUILD FLIP CARDS (generic, any array length) ── */
 const grid = document.getElementById("cardGrid");
 
-products.forEach(p => {
+products.forEach((p, i) => {
   const card = document.createElement("div");
-  card.className = "flip-card";
+  card.className = "flip-card" + (p.placeholder ? " card-placeholder" : "");
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", p.placeholder ? "Coming soon" : `View details for ${p.name}`);
+
   const pos   = p.position ? `object-position:${p.position}` : "";
   const fit   = `object-fit:${p.fit || "cover"}`;
+  const extra = p.placeholder ? ` style="opacity:.55"` : "";
   const photoHTML = p.photo
-    ? `<img class="card-photo" src="${p.photo}" alt="${p.name}" style="${fit};${pos}">`
+    ? `<img class="card-photo" src="${p.photo}" alt="${p.name}" loading="lazy" decoding="async" style="${fit};${pos}"${extra}>`
     : `<div class="card-photo-area" style="background:var(--cream);display:flex;align-items:center;justify-content:center">📦</div>`;
+
+  const nameStyle = p.placeholder ? ` style="color:var(--text-soft)"` : "";
+  const priceStyle = p.placeholder ? ` style="color:var(--text-soft)"` : "";
+  const backDesc = p.placeholder
+    ? `<span style="font-size:0.75rem;color:var(--text-soft)">${p.desc}</span>`
+    : (p.desc ? `<span class="card-back-desc">${p.desc}</span>` : "");
+
   card.innerHTML = `
     <div class="flip-card-inner">
       <div class="flip-card-front">
         <div class="card-photo-area">${photoHTML}</div>
         <div class="card-label">
-          <span class="product-name">${p.name}</span>
-          <span class="product-price">${p.price}</span>
+          <span class="product-name"${nameStyle}>${p.name}</span>
+          <span class="product-price"${priceStyle}>${p.price}</span>
         </div>
       </div>
       <div class="flip-card-back">
         <span class="card-back-name">${p.name}</span>
-        ${p.desc ? `<span class="card-back-desc">${p.desc}</span>` : ""}
+        ${backDesc}
         <span class="card-back-price">${p.price}</span>
       </div>
     </div>`;
+
+  /* mobile: tap to toggle flip */
+  if (isTouchDevice) {
+    card.addEventListener("click", (e) => {
+      e.preventDefault();
+      card.classList.toggle("tapped");
+    });
+  }
+
+  /* keyboard: Enter / Space to flip */
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (isTouchDevice) {
+        card.classList.toggle("tapped");
+      } else {
+        card.classList.add("tapped");
+        setTimeout(() => card.classList.remove("tapped"), 1200);
+      }
+    }
+  });
+
   grid.appendChild(card);
 });
 
-/* ── placeholder card ── */
-const placeholder = document.createElement("div");
-placeholder.className = "flip-card card-placeholder";
-placeholder.innerHTML = `
-  <div class="flip-card-inner">
-    <div class="flip-card-front">
-      <div class="card-photo-area"><img class="card-photo" src="assets/coming soon icon.png" alt="Coming soon" style="opacity:.55"></div>
-      <div class="card-label">
-        <span class="product-name" style="color:var(--text-soft)">Coming Soon</span>
-        <span class="product-price" style="color:var(--text-soft)">···</span>
-      </div>
-    </div>
-    <div class="flip-card-back">
-      <span class="card-coming-soon">Something new</span>
-      <span style="font-size:0.75rem;color:var(--text-soft)">is cooking…</span>
-    </div>
-  </div>`;
-grid.appendChild(placeholder);
+/* ── HEADER FIDGET BUTTON (mobile) ── */
+if (isTouchDevice) {
+  const headerPush = document.querySelector(".header-push");
+  headerPush.addEventListener("touchstart", () => {
+    headerPush.classList.add("pressing");
+  });
+  headerPush.addEventListener("touchend", () => {
+    headerPush.classList.remove("pressing");
+  });
+  headerPush.addEventListener("touchcancel", () => {
+    headerPush.classList.remove("pressing");
+  });
+}
 
 /* ── STATUS BADGE ── */
 function updateStatus() {
