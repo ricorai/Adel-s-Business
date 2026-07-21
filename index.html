@@ -213,9 +213,15 @@
     transition:transform .55s cubic-bezier(.4,0,.2,1);
     transform-style:preserve-3d;
   }
-  .flip-card:hover .flip-card-inner,
-  .flip-card.tapped .flip-card-inner{
-    transform:rotateY(180deg);
+  @media(hover:hover){
+    .flip-card:hover .flip-card-inner{
+      transform:rotateY(180deg);
+    }
+  }
+  @media(hover:none){
+    .flip-card:active .flip-card-inner{
+      transform:rotateY(180deg);
+    }
   }
   .flip-card-front,.flip-card-back{
     position:absolute;inset:0;
@@ -530,9 +536,6 @@ products.forEach(p => {
         <span class="card-back-price">${p.price}</span>
       </div>
     </div>`;
-  card.addEventListener("click", () => {
-    card.classList.toggle("tapped");
-  });
   grid.appendChild(card);
 });
 
@@ -553,9 +556,6 @@ placeholder.innerHTML = `
       <span style="font-size:0.75rem;color:var(--text-soft)">is cooking…</span>
     </div>
   </div>`;
-placeholder.addEventListener("click", () => {
-  placeholder.classList.toggle("tapped");
-});
 grid.appendChild(placeholder);
 
 /* ── STATUS BADGE ── */
