@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adel's — Homemade Goodness</title>
+<style>
+  /* ── loader ── */
+  .loader-overlay{
+    position:fixed;inset:0;z-index:9999;
+    background:var(--cream,#fef9f0);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .4s ease;
+  }
+  .loader-overlay.hidden{opacity:0;pointer-events:none}
+  .loader{
+    position:relative;
+    width:2.5em;height:2.5em;
+    transform:rotate(165deg);
+  }
+  .loader:before,.loader:after{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    display:block;
+    width:0.5em;height:0.5em;
+    border-radius:0.25em;
+    transform:translate(-50%,-50%);
+  }
+  .loader:before{animation:before8 2s infinite}
+  .loader:after{animation:after6 2s infinite}
+  @keyframes before8{
+    0%{
+      width:0.5em;
+      box-shadow:1em -0.5em rgba(232,129,122,.75), -1em 0.5em rgba(122,184,156,.75);
+    }
+    35%{
+      width:2.5em;
+      box-shadow:0 -0.5em rgba(232,129,122,.75), 0 0.5em rgba(122,184,156,.75);
+    }
+    70%{
+      width:0.5em;
+      box-shadow:-1em -0.5em rgba(232,129,122,.75), 1em 0.5em rgba(122,184,156,.75);
+    }
+    100%{
+      box-shadow:1em -0.5em rgba(232,129,122,.75), -1em 0.5em rgba(122,184,156,.75);
+    }
+  }
+  @keyframes after6{
+    0%{
+      height:0.5em;
+      box-shadow:0.5em 1em rgba(212,168,83,.75), -0.5em -1em rgba(107,79,60,.75);
+    }
+    35%{
+      height:2.5em;
+      box-shadow:0.5em 0 rgba(212,168,83,.75), -0.5em 0 rgba(107,79,60,.75);
+    }
+    70%{
+      height:0.5em;
+      box-shadow:0.5em -1em rgba(212,168,83,.75), -0.5em 1em rgba(107,79,60,.75);
+    }
+    100%{
+      box-shadow:0.5em 1em rgba(212,168,83,.75), -0.5em -1em rgba(107,79,60,.75);
+    }
+  }
+
+  /* ── reset & base ── */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px;-webkit-text-size-adjust:100%}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:url('assets/website background.jpg') center/cover fixed;
+    color:#4a3728;
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+
+  /* ── palette ── */
+  :root{
+    --cream:#fef9f0;
+    --warm-white:#fffaf5;
+    --strawberry:#e8817a;
+    --peanut:#d4a853;
+    --mint:#7ab89c;
+    --chocolate:#6b4f3c;
+    --text:#4a3728;
+    --text-soft:#8b7355;
+    --card-bg:rgba(255,255,255,.88);
+    --shadow:0 4px 20px rgba(107,79,60,.10);
+    --radius:18px;
+    --radius-sm:12px;
+  }
+
+  /* ── header ── */
+  .header{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    gap:16px;
+    padding:20px 24px 14px;
+    position:relative;z-index:10;
+  }
+  .header-push{
+    position:relative;
+    display:inline-block;
+    border-radius:var(--radius);
+    transform-style:preserve-3d;
+    transition:transform 150ms cubic-bezier(0,0,.58,1);
+  }
+  .header-push::before{
+    content:'';
+    position:absolute;inset:0;
+    background:#e0d2c0;
+    border-radius:inherit;
+    box-shadow:0 0 0 2px #c8b8a0, 0 0.625em 0 0 #ede0d2;
+    transform:translate3d(0,0.75em,-1em);
+    transition:transform 150ms cubic-bezier(0,0,.58,1),box-shadow 150ms cubic-bezier(0,0,.58,1);
+  }
+  .header-push:hover{
+    transform:translate(0,0.25em);
+  }
+  .header-push:hover::before{
+    box-shadow:0 0 0 2px #c8b8a0, 0 0.5em 0 0 #ede0d2;
+    transform:translate3d(0,0.5em,-1em);
+  }
+  .header-push:active{
+    transform:translate(0,0.75em);
+  }
+  .header-push:active::before{
+    box-shadow:0 0 0 2px #c8b8a0, 0 0 #ede0d2;
+    transform:translate3d(0,0,-1em);
+  }
+  .header-content{
+    display:flex;align-items:center;gap:14px;
+    background:rgba(255,250,245,.82);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    border-radius:inherit;
+    padding:12px 22px;
+    position:relative;z-index:1;
+  }
+  .logo{
+    width:56px;height:56px;
+    border-radius:50%;
+    overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 12px rgba(232,129,122,.25);
+    flex-shrink:0;
+    background:var(--warm-white);
+  }
+  .logo img{
+    width:100%;height:100%;
+    object-fit:cover;
+  }
+  .header-text{display:flex;flex-direction:column;gap:1px;}
+  .business-name{
+    font-size:1.7rem;font-weight:700;
+    letter-spacing:-0.3px;
+    color:var(--chocolate);
+  }
+  .tagline{
+    font-size:0.85rem;color:var(--text-soft);
+    font-style:italic;
+  }
+  .status-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:0.75rem;font-weight:600;
+    background:var(--warm-white);
+    border:1.5px solid #e0d5c7;
+    border-radius:20px;
+    padding:5px 14px;
+    white-space:nowrap;
+    box-shadow:0 1px 6px rgba(107,79,60,.06);
+    margin-left:6px;
+  }
+  .status-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:#4caf50;
+    animation:pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.55;transform:scale(.85)}
+  }
+
+  /* ── center / flip-card grid ── */
+  .center{
+    flex:1 1 auto;
+    display:flex;align-items:center;justify-content:center;
+    padding:8px 20px;
+    overflow:hidden;
+    min-height:0;
+    position:relative;
+  }
+  .card-grid{
+    display:flex;align-items:center;justify-content:center;
+    gap:18px;
+    flex-wrap:wrap;
+    max-width:1100px;
+    width:100%;
+  }
+
+  /* ── flip card ── */
+  .flip-card{
+    background:transparent;
+    width:180px;height:240px;
+    perspective:800px;
+    flex-shrink:0;
+  }
+  .flip-card-inner{
+    position:relative;
+    width:100%;height:100%;
+    transition:transform .55s cubic-bezier(.4,0,.2,1);
+    transform-style:preserve-3d;
+  }
+  .flip-card:hover .flip-card-inner,
+  .flip-card.tapped .flip-card-inner{
+    transform:rotateY(180deg);
+  }
+  .flip-card-front,.flip-card-back{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;
+    justify-content:flex-end;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(107,79,60,.12),0 1px 3px rgba(107,79,60,.08);
+  }
+  .flip-card-front{
+    background:var(--warm-white);
+  }
+  .flip-card-back{
+    transform:rotateY(180deg);
+    background:var(--cream);
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+    gap:10px;
+    border:2px dashed #e0d5c7;
+  }
+  .card-photo-area{
+    aspect-ratio:1/1;
+    position:relative;
+    overflow:hidden;
+    font-size:64px;
+    flex-shrink:0;
+  }
+  .card-photo{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .card-label{
+    padding:12px 14px 14px;
+    background:var(--card-bg);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    display:flex;flex-direction:column;
+    gap:1px;
+  }
+  .card-label .product-name{
+    font-size:0.82rem;font-weight:700;
+    color:var(--chocolate);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .card-label .product-price{
+    font-size:0.78rem;font-weight:700;
+    color:var(--strawberry);
+  }
+  .card-back-name{
+    font-size:1.1rem;font-weight:700;
+    color:var(--chocolate);
+  }
+  .card-back-desc{
+    font-size:0.78rem;color:var(--text-soft);
+    line-height:1.5;max-width:150px;
+  }
+  .card-back-price{
+    font-size:1.3rem;font-weight:800;
+    color:var(--strawberry);
+    margin-top:4px;
+    position:relative;
+  }
+  .card-back-price::after{
+    content:'';
+    position:absolute;bottom:-3px;left:0;right:0;
+    height:2.5px;
+    background:var(--strawberry);
+    border-radius:2px;
+    opacity:.5;
+  }
+  .card-placeholder .flip-card-front{
+    background:var(--cream);
+    border:2px dashed #d4c5b2;
+    justify-content:center;
+    align-items:center;
+  }
+  .card-placeholder .card-photo-area{
+    font-size:48px;
+    opacity:.5;
+  }
+  .card-placeholder .card-label{
+    background:transparent;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    text-align:center;
+    align-items:center;
+  }
+  .card-placeholder .flip-card-back{
+    justify-content:center;
+    gap:8px;
+  }
+  .card-coming-soon{
+    font-size:0.85rem;font-weight:700;
+    color:var(--text-soft);
+    letter-spacing:.04em;
+    text-transform:uppercase;
+  }
+
+  /* ── footer ── */
+  .footer{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    gap:12px;
+    padding:14px 24px 20px;
+    position:relative;z-index:10;
+    flex-wrap:wrap;
+  }
+  .footer-btn{
+    --btn-tint:var(--btn-color, #8F9092);
+    --btn-tint-light:var(--btn-color-light, #D8D9DB);
+    display:inline-flex;align-items:center;gap:7px;
+    padding:10px 22px;
+    border-radius:30px;
+    font-size:0.9rem;font-weight:600;
+    text-decoration:none;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+    color:#606060;
+    text-shadow:0 1px #fff;
+    background-image:linear-gradient(to top, var(--btn-tint-light) 0%, #fff 80%, #FDFDFD 100%);
+    border:1px solid var(--btn-tint);
+    transition:all .2s ease;
+    outline:none;
+  }
+  .footer-btn:hover{
+    box-shadow:
+      0 3px 2px 1px #ede0d2,
+      0 5px 4px #c8b4a0,
+      0 -3px 2px #bfac98,
+      0 -5px 3px #f0e4d4,
+      inset 0 0 2px 2px #bfac98;
+  }
+  .footer-btn:active{
+    box-shadow:
+      0 2px 1px 1px #ede0d2,
+      0 3px 3px #c8b4a0,
+      0 -2px 1px #bfac98,
+      0 -3px 2px #f0e4d4,
+      inset 0 0 6px 3px #a89880,
+      inset 0 0 24px #bfac98;
+  }
+  .btn-facebook{
+    --btn-color:#a0b8d4;
+    --btn-color-light:#dce6f0;
+  }
+  .btn-contact{
+    --btn-color:#d4a0a0;
+    --btn-color-light:#f0dcdc;
+  }
+  .btn-maps{
+    --btn-color:#a0c8b4;
+    --btn-color-light:#d8ece2;
+  }
+  .btn-message{
+    --btn-color:#b8a0d4;
+    --btn-color-light:#e4dcf0;
+  }
+  .btn-icon{
+    width:20px;height:20px;
+    object-fit:contain;
+    vertical-align:middle;
+    flex-shrink:0;
+    filter:
+      drop-shadow( 1px  0 0 var(--btn-color))
+      drop-shadow(-1px  0 0 var(--btn-color))
+      drop-shadow( 0  1px 0 var(--btn-color))
+      drop-shadow( 0 -1px 0 var(--btn-color));
+  }
+
+  .card-grid{position:relative;z-index:1;}
+
+  /* ── mobile ── */
+  @media(max-width:768px){
+    body{overflow:auto}
+    .header{padding:16px 16px 10px}
+    .header-content{gap:10px}
+    .logo{width:42px;height:42px;font-size:22px}
+    .business-name{font-size:1.4rem}
+    .tagline{font-size:.78rem}
+    .status-badge{font-size:.7rem;padding:4px 10px;margin-left:0}
+    .center{
+      flex:0 0 auto;
+      min-height:0;
+      height:auto;
+      padding:12px 10px 0;
+    }
+    .card-grid{gap:12px}
+    .flip-card{width:150px;height:200px}
+    .card-photo-area{font-size:48px}
+    .card-label{padding:10px 12px 12px}
+    .card-label .product-name{font-size:.74rem}
+    .card-label .product-price{font-size:.7rem}
+    .card-back-name{font-size:.95rem}
+    .card-back-desc{font-size:.7rem}
+    .card-back-price{font-size:1.1rem}
+    .footer{padding:12px 16px 18px;gap:8px}
+    .footer-btn{padding:8px 16px;font-size:.82rem}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ═══ LOADER ═══ -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader"></div>
+  </div>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="header-push">
+    <div class="header-content">
+      <div class="logo" aria-hidden="true"><img src="assets/logo.jpg" alt="Adel's logo"></div>
+      <div class="header-text">
+        <h1 class="business-name">Adel's</h1>
+        <p class="tagline">homemade, from our kitchen to your smile</p>
+      </div>
+      <span class="status-badge" id="statusBadge">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">Open now</span>
+      </span>
+    </div>
+    </div>
+  </header>
+
+  <!-- ═══ CENTER: PRODUCT FLIP CARDS ═══ -->
+  <main class="center">
+    <div class="card-grid" id="cardGrid">
+      <!-- cards injected by JS -->
+    </div>
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <a class="footer-btn btn-facebook" href="https://facebook.com/" target="_blank" rel="noopener">
+      <img class="btn-icon" src="assets/facebook icon.png" alt=""> Facebook
+    </a>
+    <a class="footer-btn btn-contact" href="tel:+600000000000">
+      <img class="btn-icon" src="assets/call us icon.png" alt=""> Call Us
+    </a>
+    <a class="footer-btn btn-maps" href="https://maps.google.com/?q=Adel's+Homemade+Food" target="_blank" rel="noopener">
+      <img class="btn-icon" src="assets/location icon.png" alt=""> Find Us
+    </a>
+    <a class="footer-btn btn-message" href="https://m.me/" target="_blank" rel="noopener">
+      <img class="btn-icon" src="assets/message icon.png" alt=""> Message
+    </a>
+  </footer>
+
+<script>
+/* ── PRODUCT DATA — add a product: push { name, price, desc?, photo, position?, fit? } ── */
+/* position: shift crop (e.g. "center 20%"). fit: "contain" = full image + margins, default "cover" = edge-to-edge */
+const products = [
+  {
+    name: "Ice Cream",
+    price: "₱65",
+    desc: "Creamy, cold, and colorful — made fresh daily.",
+    photo: "assets/ice scream.png",
+    fit: "contain"
+  },
+  {
+    name: "Peanut Butter Spread",
+    price: "₱150",
+    desc: "Slow-roasted peanuts, ground smooth. No sugar added.",
+    photo: "assets/peanut butter spread.png",
+    fit: "contain"
+  },
+  {
+    name: "Strawberry Spread",
+    price: "₱120",
+    desc: "Ripe strawberries, cooked down slow. Tastes like Saturday morning.",
+    photo: "assets/straw berry spread.png",
+    fit: "contain"
+  },
+  {
+    name: "Egg Chips",
+    price: "₱55",
+    desc: "Crispy, golden, and just the right amount of salty.",
+    photo: "assets/egg chips.png",
+    fit: "contain"
+  }
+];
+
+/* ── BUILD FLIP CARDS ── */
+const grid = document.getElementById("cardGrid");
+
+products.forEach(p => {
+  const card = document.createElement("div");
+  card.className = "flip-card";
+  const pos   = p.position ? `object-position:${p.position}` : "";
+  const fit   = `object-fit:${p.fit || "cover"}`;
+  const photoHTML = p.photo
+    ? `<img class="card-photo" src="${p.photo}" alt="${p.name}" style="${fit};${pos}">`
+    : `<div class="card-photo-area" style="background:var(--cream);display:flex;align-items:center;justify-content:center">📦</div>`;
+  card.innerHTML = `
+    <div class="flip-card-inner">
+      <div class="flip-card-front">
+        <div class="card-photo-area">${photoHTML}</div>
+        <div class="card-label">
+          <span class="product-name">${p.name}</span>
+          <span class="product-price">${p.price}</span>
+        </div>
+      </div>
+      <div class="flip-card-back">
+        <span class="card-back-name">${p.name}</span>
+        ${p.desc ? `<span class="card-back-desc">${p.desc}</span>` : ""}
+        <span class="card-back-price">${p.price}</span>
+      </div>
+    </div>`;
+  card.addEventListener("click", () => {
+    card.classList.toggle("tapped");
+  });
+  grid.appendChild(card);
+});
+
+/* ── placeholder card ── */
+const placeholder = document.createElement("div");
+placeholder.className = "flip-card card-placeholder";
+placeholder.innerHTML = `
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <div class="card-photo-area"><img class="card-photo" src="assets/coming soon icon.png" alt="Coming soon" style="opacity:.55"></div>
+      <div class="card-label">
+        <span class="product-name" style="color:var(--text-soft)">Coming Soon</span>
+        <span class="product-price" style="color:var(--text-soft)">···</span>
+      </div>
+    </div>
+    <div class="flip-card-back">
+      <span class="card-coming-soon">Something new</span>
+      <span style="font-size:0.75rem;color:var(--text-soft)">is cooking…</span>
+    </div>
+  </div>`;
+placeholder.addEventListener("click", () => {
+  placeholder.classList.toggle("tapped");
+});
+grid.appendChild(placeholder);
+
+/* ── STATUS BADGE ── */
+function updateStatus() {
+  const now  = new Date();
+  const hour = now.getHours();
+  const day  = now.getDay(); /* 0=Sun */
+  const open = (day !== 0) && (hour >= 9 && hour < 18); /* Mon-Sat 9am-6pm */
+  const dot  = document.getElementById("statusDot");
+  const label= document.getElementById("statusLabel");
+
+  if (open) {
+    dot.style.background = "#4caf50";
+    label.textContent = "Open now";
+  } else {
+    dot.style.background = "#e8817a";
+    dot.style.animation = "none";
+    label.textContent = (day === 0) ? "Opens Mon 9am – 6pm" : "Opens at 9am – 6pm";
+  }
+}
+updateStatus();
+
+/* ── LOADER HIDE ── */
+const loaderStart = performance.now();
+const MIN_LOADER = 1500; /* minimum 1.5s display */
+window.addEventListener("load", () => {
+  const elapsed = performance.now() - loaderStart;
+  const delay   = Math.max(MIN_LOADER - elapsed, 0);
+  setTimeout(() => {
+    const overlay = document.getElementById("loaderOverlay");
+    overlay.classList.add("hidden");
+    /* remove from DOM after fade */
+    setTimeout(() => overlay.remove(), 500);
+  }, delay);
+});
+</script>
+
+</body>
+</html>
